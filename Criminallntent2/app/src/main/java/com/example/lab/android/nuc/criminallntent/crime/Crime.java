@@ -23,11 +23,33 @@ public class Crime {
 
     private String mSuspect;
 
+    private String photoNumber;
+
 
     //构造器
     public Crime() {
         mId = UUID.randomUUID();
         mDate = new Date();
+    }
+
+    private int hour;
+
+    private int minute;
+
+    public int getHour() {
+        return hour;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
     }
 
     public Crime(UUID id){
@@ -73,5 +95,13 @@ public class Crime {
 
     public void setSuspect(String suspect) {
         mSuspect = suspect;
+    }
+
+    public String getPhotoNumber() {
+        return photoNumber;
+    }
+
+    public void setPhotoNumber(String photoNumber) {
+        this.photoNumber = photoNumber;
     }
 }

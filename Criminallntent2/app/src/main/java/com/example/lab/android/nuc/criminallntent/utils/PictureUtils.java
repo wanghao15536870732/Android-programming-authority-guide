@@ -1,4 +1,4 @@
-package com.example.lab.android.nuc.criminallntent;
+package com.example.lab.android.nuc.criminallntent.utils;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -33,14 +33,16 @@ public class PictureUtils {
         float srcWidth = options.outWidth;
         float srcHeight = options.outHeight;
 
-        int inSsampleSize = 1;
+        int inSampleSize = 1;
         if (srcHeight > deatHeight || srcWidth > destWidth){
             if (srcWidth > srcHeight){
-                inSsampleSize = Math.round(srcHeight  / deatHeight);
+                inSampleSize = Math.round(srcHeight  / deatHeight);
             }else {
-                inSsampleSize = Math.round(srcWidth / destWidth);
+                inSampleSize = Math.round(srcWidth / destWidth);
             }
         }
+        options = new BitmapFactory.Options();
+        options.inSampleSize = inSampleSize;
         return BitmapFactory.decodeFile(path,options);
     }
 }

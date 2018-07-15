@@ -21,12 +21,13 @@ import java.util.UUID;
 public class CrimePagerActivity extends AppCompatActivity {
 
 
-
     private static final String EXTRA_CRIME_ID =
             "com.example.lab.android.nuc.criminallntent.crime_id";
 
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
+
+
 
     public static Intent newIntent(Context packageContext, UUID crimeId){
         Intent intent = new Intent(packageContext,CrimePagerActivity.class);

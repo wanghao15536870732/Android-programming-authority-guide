@@ -8,6 +8,7 @@
     <include layout="@layout/view_camera_and_title"/>
 
 
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,14 +33,6 @@
         android:layout_marginRight="16dp"
         android:orientation="horizontal">
 
-
-        <CheckBox
-            android:id="@+id/crime_solved"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/crime_solved_label" />
-
         <Button
             android:id="@+id/crime_date"
             android:layout_width="wrap_content"
@@ -47,12 +40,12 @@
             android:layout_weight="1"
             android:text="@string/crime_details_label"/>
 
-        <Button
-            android:id="@+id/crime_time"
+        <CheckBox
+            android:id="@+id/crime_solved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"/>
+            android:layout_weight="1"
+            android:text="@string/crime_solved_label" />
 
     </LinearLayout>
     <LinearLayout
@@ -74,11 +67,5 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/crime_report_text"/>
-        <!--<Button-->
-            <!--android:id="@+id/crime_dial"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="@string/dial_suspect_number"/>-->
     </LinearLayout>
 </LinearLayout>

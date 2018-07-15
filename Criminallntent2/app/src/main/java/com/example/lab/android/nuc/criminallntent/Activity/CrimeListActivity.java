@@ -1,12 +1,15 @@
 package com.example.lab.android.nuc.criminallntent.Activity;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.example.lab.android.nuc.criminallntent.Fragment.CrimeFragment;
 import com.example.lab.android.nuc.criminallntent.Fragment.CrimeListFragment;
 import com.example.lab.android.nuc.criminallntent.R;
 import com.example.lab.android.nuc.criminallntent.crime.Crime;
+import com.example.lab.android.nuc.criminallntent.utils.PermissionUtils;
 
 
 public class CrimeListActivity extends SingleFragmentActivity implements CrimeListFragment.Callbacks{
@@ -17,7 +20,7 @@ public class CrimeListActivity extends SingleFragmentActivity implements CrimeLi
 
             //在该类中 覆盖getLayoutResId方法，返回双布局
             protected int getLayoutResId () {
-                return R.layout.activity_twopane;
+                return R.layout.activity_main;
 
 //            //再次切换布局
 //            return R.layout.activity_masterdetail;
@@ -40,6 +43,9 @@ public class CrimeListActivity extends SingleFragmentActivity implements CrimeLi
         }
     }
 
-
-
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate( savedInstanceState );
+        PermissionUtils.verifyStoragePermission( this );
+    }
 }

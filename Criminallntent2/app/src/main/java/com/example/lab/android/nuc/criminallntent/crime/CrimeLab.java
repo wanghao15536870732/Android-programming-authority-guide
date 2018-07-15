@@ -35,6 +35,14 @@ public class CrimeLab {
         return sCrimeLab;
     }
 
+    public void deleteCrime(Crime c){
+        mDatabase.delete(
+                CrimeDbSchema.CrimeTable.NAME,
+                CrimeDbSchema.CrimeTable.Cols.UUUID + "= ?",
+                new String[]{c.getId().toString()}
+        );
+    }
+
     private CrimeLab(Context context){
 
         //将context赋值给实例变量
@@ -68,7 +76,7 @@ public class CrimeLab {
     }
 
     public List<Crime> getCrimes() {
-//        return mCrimes;
+//        return mCrimes
         List<Crime> crimes = new ArrayList<>();
 
         CrimeCursorWrapper cursor = queryCrimes(null,null);
@@ -112,6 +120,17 @@ public class CrimeLab {
         }
     }
 
+
+    /**
+     * 创建返回图片文件所存放的地址
+     *
+     * Environment.DIRECTORY_PICTURE
+     *
+     * 获取主外部储存上存放常规文件的文件目录，通过 String 参数，可访问特定内容类型的子目录
+     * 内容常量常以 DIRECTORY 为前缀,定义在 Environment当中
+     * @param crime
+     * @return
+     */
     public File getPhotoFile(Crime crime){
         //Environment.DIRECTORY_PICTURES用于储存图像文件
         File externalFileDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -137,6 +156,7 @@ public class CrimeLab {
         values.put(CrimeDbSchema.CrimeTable.Cols.TITLE,crime.getTitle());
         values.put(CrimeDbSchema.CrimeTable.Cols.DATE,crime.getDate().getTime());
         values.put(CrimeDbSchema.CrimeTable.Cols.SOLVED,crime.isSolved() ? 1 : 0);
+        //添加嫌疑人
         values.put(CrimeDbSchema.CrimeTable.Cols.SUSPECT,crime.getSuspect());
         return values;
     }

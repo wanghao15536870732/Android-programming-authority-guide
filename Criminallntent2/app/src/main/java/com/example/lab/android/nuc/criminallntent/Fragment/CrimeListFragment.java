@@ -36,8 +36,6 @@ public class CrimeListFragment extends Fragment {
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
 
-
-
     private final int REQUEST_CRIME = 1;
 
     private CrimeAdapter mAdapter;
@@ -236,6 +234,7 @@ public class CrimeListFragment extends Fragment {
             mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
         }
+
 
         updateSubtitle();
     }

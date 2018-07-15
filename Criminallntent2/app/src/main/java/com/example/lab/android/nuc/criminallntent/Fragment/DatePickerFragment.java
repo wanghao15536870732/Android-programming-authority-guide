@@ -1,4 +1,4 @@
-package com.example.lab.android.nuc.criminallntent.Dialog;
+package com.example.lab.android.nuc.criminallntent.Fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;

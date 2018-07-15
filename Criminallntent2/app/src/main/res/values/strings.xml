@@ -93,6 +93,9 @@
     <string name="crime_report_unsolved">The case is not solved</string>
     <string name="crime_report_no_suspect">there is no suspect</string>
     <string name="crime_report_suspect">The suspect is %s.</string>
-    <string name="crime_report_subject">CrimeinalIntent Crime Report</string>
+    <string name="crime_report_subject">CriminalIntent Crime Report</string>
     <string name="send_report">Send crime report via</string>
+    <string name="details">Details</string>
+    <string name="dial_suspect_number">Dial the number</string>
+    <string name="delete_crime">delete_crime</string>
 </resources>
