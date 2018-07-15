@@ -26,7 +26,11 @@ public class BeatBoxFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-        //fragment的retainInstance属性默认的是faluse,这表民更不会被保留
+          /*
+            非常重要的一句
+            fragment的retainInstance属性默认的是false,这表民更不会被保留
+          */
+
         setRetainInstance(true);
         mBeatBox = new BeatBox(getActivity());
     }
@@ -42,6 +46,7 @@ public class BeatBoxFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_beat_box,container,false);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_beat_box_recycler_view);
+        //网格布局
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         recyclerView.setAdapter(new SoundAdapter(mBeatBox.getSounds()));
         return view;

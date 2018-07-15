@@ -1,8 +1,10 @@
 package com.example.lab.android.nuc.beatbox;
 
 /**
+ * Sound管理类
  * Created by 王浩 on 2018/3/30.
  */
+
 
 public class Sound {
 
@@ -15,6 +17,7 @@ public class Sound {
 
     public Sound(String assetPath){
         mAssetPath = assetPath;
+        //路径用"/"隔开，即分理出文件名字
         String[] components = assetPath.split("/");
         String filename = components[components.length - 1];
         //将文件名的后缀去掉

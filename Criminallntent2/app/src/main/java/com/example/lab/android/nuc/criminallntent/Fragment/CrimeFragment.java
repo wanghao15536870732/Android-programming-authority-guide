@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
+import android.telecom.Call;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -86,6 +87,12 @@ public class CrimeFragment extends Fragment {
     private Uri imageUri;
     private String SuspectContactId;
 
+    private Callbacks mCallbacks;
+
+    public interface Callbacks{
+        void onCrimeUpdated(Crime crime);
+    }
+
     public static CrimeFragment newInstance(UUID crimeId){
         //每个fragment实例都可以携带一个Bundle对象，该Bundle包含有键值对，
         // 我们可以像附加extra到Activity的intent当中一样使用它们，
@@ -98,6 +105,11 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach( activity );
+        mCallbacks = (Callbacks) activity;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,6 +134,13 @@ public class CrimeFragment extends Fragment {
         super.onPause();
         CrimeLab.get(getActivity())
                 .updateCrime(mCrime);
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     @Override
@@ -161,6 +180,7 @@ public class CrimeFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //在这里只覆写onTextChanged()方法来显示TextView
                 mCrime.setTitle(s.toString());
+                updateCrime();
             }
 
             @Override
@@ -238,6 +258,7 @@ public class CrimeFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                updateCrime();
             }
         });
 
@@ -396,6 +417,7 @@ public class CrimeFragment extends Fragment {
 
             //设置对应的Crimed的记录日期
             mCrime.setDate(date);
+            updateCrime();
             //更新Button所显示的信息
             updateDate();
         }else if (requestCode == REQUEST_CNTACT && data != null){
@@ -420,6 +442,7 @@ public class CrimeFragment extends Fragment {
                 String suspect = c.getString(0);
 //                String Photonumber = c.getString( 1 );
                 mCrime.setSuspect(suspect);
+                updateCrime();
 //                mCrime.setPhotoNumber( Photonumber );
                 mSuspectButton.setText(suspect);
                 String _id = c.getString( 1 );
@@ -453,11 +476,20 @@ public class CrimeFragment extends Fragment {
             }
         }else if (requestCode == REQUEST_PHOTO){
 //            updatePhotoView();
+            updateCrime();
             /**
              * 优化略缩图加载
              */
             updatePhotoView( mPhotoView.getWidth(),mPhotoView.getHeight() );
         }
+    }
+
+    //在CrimeLab当中保存mCrime,以及调用mCallbacks.OnCrimeUpdated(Crime),
+    //常见遍历方法处理他们
+
+    private void updateCrime(){
+        CrimeLab.get( getActivity() ).updateCrime( mCrime );
+        mCallbacks.onCrimeUpdated( mCrime );
     }
 
     private void updateDate() {

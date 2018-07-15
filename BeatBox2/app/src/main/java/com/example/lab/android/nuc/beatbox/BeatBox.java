@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * 音乐管理类
+ */
 public class BeatBox {
     //添加常量，第一个是为了用于日志记录
     private static final String TAG = "BeatBox";
@@ -20,8 +22,10 @@ public class BeatBox {
     //第二个是用于声音资源文件目录名
     private static final String SOUNDS_FOLDER = "sample_sounds";
 
+    ///最多同时破防5个语音
     private static final int MAX_SOUNDS = 5;
 
+    //获取AssetManager备用
     private AssetManager mAssets;
     
     //创建数组存放音乐名字
@@ -50,6 +54,7 @@ public class BeatBox {
     public void release(){
         mSoundPool.release();
     }
+
     //取得assets中的资源清单，使用List(String)方法
     // 实现一个loadSounds()方法,调用他给出声音文件清单
     private void loadSounds(){
@@ -65,6 +70,7 @@ public class BeatBox {
             try {
                 String assetPath = SOUNDS_FOLDER + "/" + filename;
                 Sound sound = new Sound(assetPath);
+                //预加载音乐
                 load(sound);
                 mSounds.add(sound);
             }catch (IOException e){

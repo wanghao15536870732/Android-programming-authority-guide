@@ -18,7 +18,7 @@ import com.example.lab.android.nuc.criminallntent.crime.CrimeLab;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimePagerActivity extends AppCompatActivity {
+public class CrimePagerActivity extends AppCompatActivity implements CrimeFragment.Callbacks{
 
 
     private static final String EXTRA_CRIME_ID =
@@ -72,6 +72,13 @@ public class CrimePagerActivity extends AppCompatActivity {
                 break;
             }
         }
+
+    }
+
+    //每个托管CrimeFragment的activity都必须实现CrimeFragment.Cllbacks接口a
+    //因此创建一个空的接口
+    @Override
+    public void onCrimeUpdated(Crime crime) {
 
     }
 }

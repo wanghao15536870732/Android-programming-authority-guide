@@ -33,7 +33,8 @@ import com.example.lab.android.nuc.photogallery.service.PollService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotoGalleryFragment extends Fragment {
+public class
+PhotoGalleryFragment extends Fragment {
 
 
     private static final String TAG = "PhotoGalleryFragment";
@@ -120,7 +121,7 @@ public class PhotoGalleryFragment extends Fragment {
          */
 
         ///首先从菜单中取出MenuItem并把它保存在searchItem变量当中
-        MenuItem searchItem = menu.findItem( R.id.menu_item_search );
+        final MenuItem searchItem = menu.findItem( R.id.menu_item_search );
 
         //使用getActionView()取出searchView
         final SearchView searchView = (SearchView) searchItem.getActionView();
@@ -139,6 +140,17 @@ public class PhotoGalleryFragment extends Fragment {
             public boolean onQueryTextChange(String newText) {
                 Log.d( TAG,"QueryTextChange: " + newText);
                 return false;
+            }
+        } );
+        /**
+         * 优化应用
+         * 回调方法设置搜索文本框的值
+         */
+        searchView.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = QueryPreferences.getStoreQuery( getActivity() );
+                searchView.setQuery( query,false );
             }
         } );
     }

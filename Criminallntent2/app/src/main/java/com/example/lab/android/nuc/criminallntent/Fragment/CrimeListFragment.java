@@ -55,17 +55,23 @@ public class CrimeListFragment extends Fragment {
 
     //首先要定义一个成员变量，存放实现Callbacks的对象
     // ，然后托管activity强制类型转换为Callback对象并赋值给Callbacks类型变量
-    private Callback mCallback;
+    private Callbacks mCallback;
 
     /**
-     *
      * 添加接口
      */
+    public interface Callbacks{
+        void onCrimeSelected(Crime crime);
+    }
 
     private TextView mNoCrimetextView;
     private Button mNoCrimeButton;
-    public interface Callbacks{
-        void onCrimeSelected(Crime crime);
+
+    //activity赋值是在Fragment的生命周期方法中处理的
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallback = (Callbacks) activity;
     }
 
     @Override
@@ -74,13 +80,6 @@ public class CrimeListFragment extends Fragment {
         mCallback = null;
     }
 
-
-    //activity赋值是在Fragment的生命周期方法中处理的
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-//        mCallback = (Callback) activity;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -163,6 +162,11 @@ public class CrimeListFragment extends Fragment {
             //
             Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
             startActivityForResult(intent,REQUEST_CRIME_ITEM);
+            /*
+             平板需要更改的地方
+            */
+//            mCallback.onCrimeSelected(mCrime );
+
         }
 
     }
@@ -252,7 +256,7 @@ public class CrimeListFragment extends Fragment {
 
 
 
-    private void updateUI(){
+    public void updateUI(){
 
         CrimeLab crimeLab = CrimeLab.get(getActivity());
 
@@ -300,6 +304,11 @@ public class CrimeListFragment extends Fragment {
                 //然后重启CrimePagerActivity实例，让用户可以编辑新创建的crime实例
                 Intent intent = CrimePagerActivity.newIntent(getActivity(),crime.getId());
                 startActivity(intent);
+                /*
+                平板需要更改的地方
+                 */
+//                updateUI();
+//                mCallback.onCrimeSelected( crime );
                 return true;
             case R.id.menu_item_show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -340,7 +349,5 @@ public class CrimeListFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
 
     }
-
-
 
 }

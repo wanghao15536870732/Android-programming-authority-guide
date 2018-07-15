@@ -74,12 +74,12 @@ public class NerdLauncherFragment extends Fragment {
         private ImageView mAppImageView;
 
 
-
         public ActivityHolder(View itemView) {
             super(itemView);
             mNameTextView = (TextView) itemView.findViewById(R.id.nerd_launcher_item_text);
             mAppImageView = (ImageView) itemView.findViewById(R.id.nerd_launcher_item_imageView);
             mNameTextView.setOnClickListener(this);
+            mAppImageView.setOnClickListener( this );
         }
 
         public void bindActivity(ResolveInfo resolveInfo){
