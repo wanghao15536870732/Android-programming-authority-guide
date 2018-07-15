@@ -1,5 +1,6 @@
 package com.example.lab.android.nuc.criminallntent.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,8 +81,11 @@ public class CrimeFragment extends Fragment {
 
     private Button dialButton;
     private ImageView mPhotoView;
+    private Button callSusoectButton;
 
     private Uri imageUri;
+    private String SuspectContactId;
+
     public static CrimeFragment newInstance(UUID crimeId){
         //每个fragment实例都可以携带一个Bundle对象，该Bundle包含有键值对，
         // 我们可以像附加extra到Activity的intent当中一样使用它们，
@@ -125,6 +130,8 @@ public class CrimeFragment extends Fragment {
         inflater.inflate( R.menu.fragment_crime,menu );
     }
 
+
+
     @Nullable
     @Override
     //该方法实例化fragment视图的布局，然后将实例化的View返回给托管activity
@@ -161,6 +168,25 @@ public class CrimeFragment extends Fragment {
 
             }
         });
+
+        /*
+        挑战练习  call
+         */
+        callSusoectButton = (Button) v.findViewById( R.id.crime_call_suspect );
+        if (mCrime.getSuspectcontact() == null){
+            callSusoectButton.setEnabled( false );
+        }else {
+            callSusoectButton.setEnabled( true );
+            callSusoectButton.setText( mCrime.getSuspectcontact() );
+        }
+        callSusoectButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent( Intent.ACTION_DIAL );
+                intent.setData( Uri.parse("tel:" + mCrime.getSuspectcontact()) );
+                startActivity(intent);
+            }
+        } );
 
         /**
          * 挑战练习 通过查找联系人对应的号码
@@ -221,10 +247,11 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                /**
+                /*
                  * 挑战练习
                  * 利用ShareCompat.Intent.Builder来创建Intent
                  */
+
 //                ShareCompat.IntentBuilder sc = ShareCompat.IntentBuilder.from( getActivity() );
 //                sc.setType( "text/plain" );
 //                sc.setText( getCrimeReport());
@@ -249,7 +276,7 @@ public class CrimeFragment extends Fragment {
         //用于拍照的隐士intent
         final Intent pickContact = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
-//        pickContact.addCategory(Intent.CATEGORY_HOME);
+//       pickContact.addCategory(Intent.CATEGORY_HOME);
         ///照片按钮的点击响应事件
         mSuspectButton = (Button) v.findViewById(R.id.crime_suspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
@@ -291,9 +318,11 @@ public class CrimeFragment extends Fragment {
         }
         if (Build.VERSION.SDK_INT >= 24){
             imageUri = FileProvider.getUriForFile(getContext(),"com.example.lab.android.nuc.criminallntent.fileprovider",mPhotoFile );
+
         }else {
             imageUri = Uri.fromFile( mPhotoFile );
         }
+        mCrime.setPhotoFile( mPhotoFile );
         captureImage.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,17 +353,24 @@ public class CrimeFragment extends Fragment {
         /**
          * 优化略缩图
          */
+        mCrime.setImageWidth( mPhotoView.getWidth() );
+        mCrime.setImageHeight( mPhotoButton.getHeight() );
         updatePhotoView( mPhotoView.getWidth(),mPhotoView.getHeight() );
+
         return v;
     }
 
 
+    /*
+    挑战练习 13 实现删除 crime
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_item_delete_crime:
-                CrimeLab.get( getActivity()).deleteCrime( mCrime );
-                this.onDestroy();
+                CrimeLab.get( getActivity()).removeCrime( mCrime );
+                CrimeLab.get( getActivity() ).deleteCrime( mCrime );
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected( item );
@@ -357,6 +393,7 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE){
             //覆盖onActivityResult()方法从extra中获取日期数据，
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+
             //设置对应的Crimed的记录日期
             mCrime.setDate(date);
             //更新Button所显示的信息
@@ -367,7 +404,10 @@ public class CrimeFragment extends Fragment {
             //创建了一条查询语句，要球返回全部联系人的姓名
             //然后查询数据库
             String[] queryFields = new String[]{
-                    ContactsContract.Contacts.DISPLAY_NAME
+                    ContactsContract.Contacts.DISPLAY_NAME,
+
+                    //记住这个是最重要的，别忘了
+                    ContactsContract.Contacts._ID
             };
             Cursor c = getActivity().getContentResolver().
                     query(contactUri,queryFields,null,null,null);
@@ -382,9 +422,34 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSuspect(suspect);
 //                mCrime.setPhotoNumber( Photonumber );
                 mSuspectButton.setText(suspect);
+                String _id = c.getString( 1 );
+                SuspectContactId = _id;
             }finally {
                 //关闭查询
                 c.close();
+            }
+
+            /*
+            挑战练习  添加拨号
+             */
+            Cursor cursor_1 = getActivity().getContentResolver()
+                    .query( ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{SuspectContactId},
+                            null);
+            try{
+                if (cursor_1.getCount() == 0){
+                    return;
+                }
+                cursor_1.moveToFirst();
+                int index = cursor_1.getColumnIndex( ContactsContract.CommonDataKinds.Phone.NUMBER );
+                String number = cursor_1.getString( index );
+                mCrime.setSuspectcontact( number );
+                callSusoectButton.setEnabled( true );
+                callSusoectButton.setText( number );
+            }finally {
+                cursor_1.close();
             }
         }else if (requestCode == REQUEST_PHOTO){
 //            updatePhotoView();
@@ -396,10 +461,23 @@ public class CrimeFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDataButton.setText(mCrime.getDate().toString());
+
+//        mDataButton.setText(mCrime.getDate().toString());
+
+        /**
+         * 第八章挑战练习
+         */
+        String date = (String) DateFormat.format("EEEE, MMM dd, yyyy", mCrime.getDate());
+        mDataButton.setText( date );
+
     }
+    @SuppressLint("SetTextI18n")
     private void updateTime() {
-        mTimeButton.setText( mCrime.getHour() + ":" + mCrime.getMinute() );
+        if (mCrime.getMinute() < 10){
+            mTimeButton.setText( mCrime.getHour() + " : 0" + mCrime.getMinute() );
+        }else {
+            mTimeButton.setText( mCrime.getHour() + " : " + mCrime.getMinute() );
+        }
     }
 
 

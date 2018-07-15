@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
+
     <CheckBox
         android:id="@+id/list_item_crime_solved_check_box"
         android:layout_width="wrap_content"
@@ -31,5 +33,5 @@
         android:layout_toLeftOf="@id/list_item_crime_solved_check_box"
         android:layout_below="@id/list_item_crime_title_text_view"
         android:padding="4dp"
-        android:text="Crime Dare"/>
+        android:text="Crime Date"/>
 </RelativeLayout>

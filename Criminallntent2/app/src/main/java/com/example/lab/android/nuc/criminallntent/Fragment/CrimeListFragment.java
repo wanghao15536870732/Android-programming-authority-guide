@@ -3,25 +3,32 @@ package com.example.lab.android.nuc.criminallntent.Fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.lab.android.nuc.criminallntent.crime.Crime;
 import com.example.lab.android.nuc.criminallntent.crime.CrimeLab;
 import com.example.lab.android.nuc.criminallntent.Activity.CrimePagerActivity;
 import com.example.lab.android.nuc.criminallntent.R;
+import com.example.lab.android.nuc.criminallntent.utils.PictureUtils;
 
 import java.util.List;
 
@@ -32,8 +39,11 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
 
+    private int mIndex;
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+
+    private static final int REQUEST_CRIME_ITEM = 2;
 
 
     private final int REQUEST_CRIME = 1;
@@ -51,6 +61,9 @@ public class CrimeListFragment extends Fragment {
      *
      * 添加接口
      */
+
+    private TextView mNoCrimetextView;
+    private Button mNoCrimeButton;
     public interface Callbacks{
         void onCrimeSelected(Crime crime);
     }
@@ -82,7 +95,10 @@ public class CrimeListFragment extends Fragment {
         //创建RecyclerView视图
         View view = inflater.inflate(R.layout.fragment_crime_list,container,false);
 
+        mNoCrimetextView = (TextView) view.findViewById( R.id.no_crime_textview );
+        mNoCrimeButton = (Button) view.findViewById( R.id.no_crime_add_button );
         mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
+        mCrimeRecyclerView.addItemDecoration( new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
 
         //如果没有LayoutManager的支持，不仅Recycler无法工作，还会导致应用崩溃，
         //所以，RecyclerView视图创建完成之后，就立即传给了LayoutManager对象
@@ -92,8 +108,6 @@ public class CrimeListFragment extends Fragment {
         if (savedInstanceState != null){
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
-
-
         //更新UI界面
         updateUI();
         return view;
@@ -108,6 +122,7 @@ public class CrimeListFragment extends Fragment {
         private TextView mDateTextView;
         private TextView mTitleTextView;
         private CheckBox mSolvedCheckBox;
+        private ImageView mImageView;
 
         public CrimeHolder(View itemView) {
             super(itemView);
@@ -118,14 +133,21 @@ public class CrimeListFragment extends Fragment {
                     findViewById(R.id.list_item_crime_date_text_view);
             mSolvedCheckBox = (CheckBox) itemView.
                     findViewById(R.id.list_item_crime_solved_check_box);
+            mImageView = (ImageView) itemView.findViewById( R.id.crime_photo );
         }
 
 
+        @SuppressLint("SetTextI18n")
         public void bindCrime(Crime crime){
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+            String date = (String) DateFormat.format("EEEE, MMM dd, yyyy", mCrime.getDate());
+            int hour =  mCrime.getHour();
+            int minute = mCrime.getMinute();
+            mDateTextView.setText("日期："  + date + "  时间：" + hour + " : " + minute);
+
             mSolvedCheckBox.setChecked(mCrime.isSolved());
+
         }
 
         @Override
@@ -133,17 +155,30 @@ public class CrimeListFragment extends Fragment {
 //            Toast.makeText(getActivity(),mCrime.getTitle() + "clicked!",
 //                    Toast.LENGTH_SHORT).show();
 
+            /***
+             * 挑战练习
+             */
+            CrimeLab crimeLab = CrimeLab.get( getActivity() );
+            mIndex = crimeLab.getCrimeIndex( mCrime );
+            //
             Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
-            startActivity(intent);
+            startActivityForResult(intent,REQUEST_CRIME_ITEM);
         }
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CRIME){
-            //
-        }
+       switch (requestCode ){
+           case REQUEST_CRIME:
+
+               break;
+           case REQUEST_CRIME_ITEM:
+
+               break;
+
+
+       }
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
@@ -232,10 +267,24 @@ public class CrimeListFragment extends Fragment {
             //如果已经配置好CrimeAdapter，就调用notifyDataSetChanged()
             // 方法修改updateUI()方法
             mAdapter.setCrimes(crimes);
-            mAdapter.notifyDataSetChanged();
+//            mAdapter.notifyDataSetChanged();
+            //实现高效的RecyclerView刷新方法
+
+            //如果想要刷新删除crime之后的CrimeListFragment，
+//            mAdapter.notifyItemChanged( mIndex );  //单例更新  -- 会报错
+            mAdapter.notifyDataSetChanged();  //全量更新
         }
 
-
+        /*
+        挑战练习 用于RecyclerView的空列表
+         */
+        if (crimes.size() == 0){
+            mNoCrimetextView.setVisibility( View.VISIBLE );
+            mNoCrimeButton.setVisibility( View.VISIBLE );
+        }else {
+            mNoCrimeButton.setVisibility( View.GONE );
+            mNoCrimetextView.setVisibility( View.GONE );
+        }
         updateSubtitle();
     }
 
@@ -267,17 +316,31 @@ public class CrimeListFragment extends Fragment {
     private void updateSubtitle(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
-        @SuppressLint("StringFormatMatches")
-        String subtitle = getString(R.string.subtitle_format,crimeCount);
+//        @SuppressLint("StringFormatMatches")
+//        String subtitle = getString(R.string.subtitle_format,crimeCount);
 
+        // 处理单复数的问题
+
+        //失败
+//        String subtitle = String.format( getResources().getQuantityString( R.plurals.subtitle_plural, crimeCount), crimeCount );
+
+        String subtitle = null;
+        if (crimeCount == 0){
+           mSubtitleVisible = false;
+        }else if (crimeCount == 1){
+            subtitle =  crimeCount + " crime";
+        }else {
+            subtitle = crimeCount + " crimes";
+        }
         if (!mSubtitleVisible){
             subtitle = null;
         }
-
         //托管CrimeListFragment的activity被强制转换成AppCompatActivity的子类
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
 
     }
+
+
 
 }

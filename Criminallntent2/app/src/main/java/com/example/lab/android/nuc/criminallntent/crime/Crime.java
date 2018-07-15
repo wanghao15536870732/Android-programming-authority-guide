@@ -25,6 +25,44 @@ public class Crime {
 
     private String photoNumber;
 
+    private File PhotoFile;
+    private int imageWidth;
+    private int imageHeight;
+
+    private String msuspectcontact;
+
+    public String getSuspectcontact() {
+        return msuspectcontact;
+    }
+
+
+    public void setSuspectcontact(String suspectcontact) {
+        msuspectcontact = suspectcontact;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
+    public File getPhotoFile() {
+        return PhotoFile;
+    }
+
+    public void setPhotoFile(File photoFile) {
+        PhotoFile = photoFile;
+    }
 
     //构造器
     public Crime() {

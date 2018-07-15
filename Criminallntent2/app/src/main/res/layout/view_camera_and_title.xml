@@ -42,7 +42,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:hint="@string/crime_title_hint"/>
+            android:hint="@string/crime_title_hint"
+            android:background="@drawable/base_edit_input"
+            android:layout_margin="5dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp" />
     </LinearLayout>
 
 </LinearLayout>

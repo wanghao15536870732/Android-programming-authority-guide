@@ -92,10 +92,21 @@
     <string name="crime_report_solved">The case is solved</string>
     <string name="crime_report_unsolved">The case is not solved</string>
     <string name="crime_report_no_suspect">there is no suspect</string>
-    <string name="crime_report_suspect">The suspect is %s.</string>
+    <string name="crime_report_suspect">The suspect is %3$s.</string>
     <string name="crime_report_subject">CriminalIntent Crime Report</string>
     <string name="send_report">Send crime report via</string>
     <string name="details">Details</string>
     <string name="dial_suspect_number">Dial the number</string>
     <string name="delete_crime">delete_crime</string>
+    <string name="time">time</string>
+    <string name="no_crime">没有crime记录可以显示</string>
+    <string name="add_crime">add crime in the criminallnment</string>
+    <string name="crime_call_suspect_text">call</string>
+
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$s crime</item>
+        <item quantity="zero">%1$s crime</item>
+        <item quantity="other">%1$s crimes</item>
+
+    </plurals>
 </resources>

@@ -9,21 +9,31 @@
 
 
     <TextView
+        style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_title_label" />
+        android:text="@string/crime_title_label"
+        android:layout_margin="15dp"/>
 
     <EditText
         android:id="@+id/crime_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/crime_title_hint" />
+        android:hint="@string/crime_title_hint"
+        android:paddingStart="8dp"
+        android:background="@drawable/base_edit_input"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:paddingLeft="5dp" />
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_details_label" />
+        android:text="@string/crime_details_label"
+        android:layout_margin="15dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,23 +48,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/crime_solved_label" />
-
-        <Button
-            android:id="@+id/crime_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/crime_details_label"/>
+            android:layout_marginLeft="15dp"
+            android:paddingStart="15dp"
+            android:text="@string/crime_solved_label"
+            android:paddingLeft="5dp" />
 
         <Button
             android:id="@+id/crime_time"
+            android:text="@string/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"/>
+            android:layout_marginRight="16dp"
+            android:background="@drawable/bt_selector"/>
+        <Button
+            android:id="@+id/crime_call_suspect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/crime_call_suspect_text"
+            android:background="@drawable/bt_selector"/>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/crime_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:text="@string/date_picker_title"
+        android:background="@drawable/bt_selector"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"
@@ -67,13 +90,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/crime_suspect_text"/>
+            android:layout_marginRight="5dp"
+            android:text="@string/crime_suspect_text"
+            android:background="@drawable/bt_selector"/>
         <Button
             android:id="@+id/crime_report"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/crime_report_text"/>
+            android:text="@string/crime_report_text"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/bt_selector"/>
         <!--<Button-->
             <!--android:id="@+id/crime_dial"-->
             <!--android:layout_width="0dp"-->

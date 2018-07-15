@@ -42,6 +42,10 @@ public class CrimeLab {
                 new String[]{c.getId().toString()}
         );
     }
+    //挑战练习 13 删除crime记录
+    public void removeCrime(Crime c){
+        getCrimes().remove( c );
+    }
 
     private CrimeLab(Context context){
 
@@ -158,6 +162,8 @@ public class CrimeLab {
         values.put(CrimeDbSchema.CrimeTable.Cols.SOLVED,crime.isSolved() ? 1 : 0);
         //添加嫌疑人
         values.put(CrimeDbSchema.CrimeTable.Cols.SUSPECT,crime.getSuspect());
+        //添加联系人号码
+        values.put( CrimeDbSchema.CrimeTable.Cols.SuspectContact,crime.getSuspectcontact() ); //add this
         return values;
     }
 
@@ -173,4 +179,14 @@ public class CrimeLab {
         );
         return new CrimeCursorWrapper(cursor);
     }
+
+
+    /**
+     * 挑战练习  10 实现高效的Recycler刷新
+     */
+
+    public int getCrimeIndex(Crime crime){
+        return getCrimes().indexOf( crime );
+    }
+
 }
