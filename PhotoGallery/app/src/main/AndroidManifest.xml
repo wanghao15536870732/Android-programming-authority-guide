@@ -16,15 +16,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="ExtraText">
-        <activity android:name=".Activity.PhotoGalleryActivity">
+        <activity android:name=".Activity.PhotoGalleryActivity"
+            tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".receiver.StartupReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
-        <service android:name=".service.PollService"/>
+        <service
+            android:name=".service.PollService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.lab.android.nuc.photogallery.Base;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
@@ -15,6 +16,29 @@ public class GalleryItem {
 
     //图片资源标识符
     private String mUrl;
+
+    private String mOwner;
+
+    public String getCaption() {
+        return mCaption;
+    }
+
+    public String getOwner() {
+        return mOwner;
+    }
+
+    public void setOwner(String owner) {
+        mOwner = owner;
+    }
+
+
+    public Uri getPhotoPageUri(){
+        return Uri.parse( "http://www.flickr.com/photos/" )
+                .buildUpon()
+                .appendPath( mOwner )
+                .appendPath( mId)
+                .build();
+    }
 
     @NonNull
     @Override

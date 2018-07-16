@@ -1,8 +1,8 @@
-package com.example.lab.android.nuc.nerdlauncher;
+package com.example.lab.android.nuc.nerdlauncher.activity;
 
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+
+import com.example.lab.android.nuc.nerdlauncher.fragment.NerdLauncherFragment;
 
 public class NerdLauncherActivity extends SingleFragmentActivity {
 

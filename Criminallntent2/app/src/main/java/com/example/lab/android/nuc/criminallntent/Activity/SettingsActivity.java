@@ -1,4 +1,4 @@
-package com.example.lab.android.nuc.criminallntent.settingActivity;
+package com.example.lab.android.nuc.criminallntent.Activity;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -19,7 +19,6 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.example.lab.android.nuc.criminallntent.Activity.AppCompatPreferenceActivity;
 import com.example.lab.android.nuc.criminallntent.R;
 
 import java.util.List;

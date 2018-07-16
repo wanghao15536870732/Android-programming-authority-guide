@@ -36,6 +36,7 @@ import java.util.List;
 public class
 PhotoGalleryFragment extends Fragment {
 
+    private PhotoAdapter mPhotoAdapter;
 
     private static final String TAG = "PhotoGalleryFragment";
 
@@ -43,16 +44,22 @@ PhotoGalleryFragment extends Fragment {
     private List<GalleryItem> mItems = new ArrayList<>();
     private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
+    private int mNextPage = 1, mLastPosition;
+
+    private FetchItemsTask mFetchItemsTask;
+
+    private final int MAX_PAGES = 3;
+
     public static PhotoGalleryFragment newInstance() {
         return new PhotoGalleryFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
 
         //在Activity重新创建时可以不完全销毁Fragment，以便Fragment可以恢复
-        setRetainInstance(true);
+        setRetainInstance( true );
 
         //让fragment接收菜单回调方法
         setHasOptionsMenu( true );
@@ -60,6 +67,11 @@ PhotoGalleryFragment extends Fragment {
         //execute()会启动AsyncTask
 //        new FetchItemsTask().execute();
         updateItems();
+
+
+        //添加服务代码
+        Intent intentservice = PollService.newIntent( getActivity() );
+//        getActivity().startService( intentservice );
 
 //        Intent intent = PollService.newIntent( getActivity() );
 //        getActivity().startService( intent );
@@ -69,14 +81,14 @@ PhotoGalleryFragment extends Fragment {
         Handler responseHandler = new Handler();
 
         //创建线程
-        mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
+        mThumbnailDownloader = new ThumbnailDownloader<>( responseHandler );
         mThumbnailDownloader.setThumbnailDownloadListener(
                 new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
                     @Override
                     //shi用个返回的Bitmap执行UI更新操作
                     public void onThumbnailDownloaded(PhotoHolder target, Bitmap thumbnail) {
-                        Drawable drawable = new BitmapDrawable(getResources(),thumbnail);
-                        target.bindDrawable(drawable);
+                        Drawable drawable = new BitmapDrawable( getResources(), thumbnail );
+                        target.bindDrawable( drawable );
                     }
                 }
         );
@@ -86,17 +98,32 @@ PhotoGalleryFragment extends Fragment {
 
         //要在start()方法之后调用getLooper()方法，这是一种保证线程就绪的处理方式
         mThumbnailDownloader.getLooper();
-        Log.i(TAG,"Background thread started");
+        Log.i( TAG, "Background thread started" );
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_photo_gallery,container,false);
+        View v = inflater.inflate( R.layout.fragment_photo_gallery, container, false );
         //attachToRoot：是否将root附加到布局文件的根视图上
-        mPhotoRecyclerView = (RecyclerView) v.findViewById(R.id.fragment_photo_gallery_recycler_view);
-        mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
+        mPhotoRecyclerView = (RecyclerView) v.findViewById( R.id.fragment_photo_gallery_recycler_view );
+
+        //添加动态调整网格
+//        mPhotoRecyclerView.getViewTreeObserver()
+//                .addOnGlobalLayoutListener( new ViewTreeObserver.OnGlobalLayoutListener() {
+//                    @Override
+//                    public void onGlobalLayout() {
+//                        int columns = mPhotoRecyclerView.getWidth() / 240;
+//                        mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), columns));
+//                        mPhotoRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//
+////                        mPhotoRecyclerView.setAdapter(new PhotoAdapter( mItems ));
+////                        mPhotoRecyclerView.addOnScrollListener(onButtomListener);
+////                        mPhotoRecyclerView.getLayoutManager().scrollToPosition(mLastPosition);
+//                    }
+//                } );
+        mPhotoRecyclerView.setLayoutManager( new GridLayoutManager( getActivity(), 3 ) );
         //在该方法中调用seyAdapter()方法，可以在每次设备旋转时重新生成RecyclerView
         // 可从新为其配置Adapter`
         setupAdapter();
@@ -108,14 +135,14 @@ PhotoGalleryFragment extends Fragment {
         super.onDestroy();
         //在该方法中退出线程
         mThumbnailDownloader.quit();
-        Log.i(TAG,"Background thread destroyed");
+        Log.i( TAG, "Background thread destroyed" );
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         super.onCreateOptionsMenu( menu, menuInflater );
-        menuInflater.inflate( R.menu.fragment_photo_gallery,menu );
+        menuInflater.inflate( R.menu.fragment_photo_gallery, menu );
         /**
          * 实现SearchView。OnQueryTextListener监听方法
          */
@@ -128,20 +155,44 @@ PhotoGalleryFragment extends Fragment {
         searchView.setOnQueryTextListener( new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d( TAG,"QueryTextSubmit: " + query );
+                Log.d( TAG, "QueryTextSubmit: " + query );
 
                 //储存用户提交的查询信息
-                QueryPreferences.setStoreQuery( getActivity(),query );
-                updateItems();
+                QueryPreferences.setStoreQuery( getActivity(), query );
+                //优化隐藏键盘
+//                if (searchView != null){
+//                    //得到输入管理对象
+//                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity()
+//                            .getSystemService( Context.INPUT_METHOD_SERVICE );
+//                    if (inputMethodManager != null){
+//                        /*
+//                            这将让键盘在所有的情况下都被隐藏，但是一般我们在点击搜索按钮后，
+//                                输入法都会乖乖的自动隐藏的。
+//                         */
+//
+//                        // 输入法如果是显示状态，那么就隐藏输入法
+//                        inputMethodManager.hideSoftInputFromWindow( searchView.getWindowToken(),0 );
+//                    }
+//                    searchView.onActionViewCollapsed();// 不获取焦点
+//                }
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d( TAG,"QueryTextChange: " + newText);
+                Log.d( TAG, "QueryTextChange: " + newText );
                 return false;
             }
         } );
+
+
+        MenuItem togglemenuItem = menu.findItem( R.id.menu_item_toggle_polling );
+        if (PollService.isServiceAlarmOn( getActivity())){
+            togglemenuItem.setTitle( R.string.stop_polling );
+        }else {
+            togglemenuItem.setTitle( R.string.start_polling );
+        }
+
         /**
          * 优化应用
          * 回调方法设置搜索文本框的值
@@ -150,26 +201,33 @@ PhotoGalleryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String query = QueryPreferences.getStoreQuery( getActivity() );
-                searchView.setQuery( query,false );
+                searchView.setQuery( query, false );
             }
         } );
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_ite_clear:
-                QueryPreferences.setStoreQuery( getActivity(),null );
+                QueryPreferences.setStoreQuery( getActivity(), null );
                 updateItems();
+                return true;
+            case R.id.menu_item_toggle_polling:
+                boolean shouldStartAlerm = !PollService.isServiceAlarmOn( getActivity() );
+                PollService.setServiceAlerm( getActivity(),shouldStartAlerm );
+                //menu刷新UI的更改更新
+                getActivity().invalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected( item );
         }
     }
 
-    private void updateItems(){
-        String query = QueryPreferences.getStoreQuery(getActivity());
-        new FetchItemsTask(query).execute( );
+    private void updateItems() {
+        String query = QueryPreferences.getStoreQuery( getActivity() );
+        mFetchItemsTask = new FetchItemsTask( query );
+        mFetchItemsTask.execute();
     }
 
     //在视图清理的时候调用清理的方法
@@ -181,24 +239,27 @@ PhotoGalleryFragment extends Fragment {
     }
 
     //Adapter的配置和关联
-    private void setupAdapter(){
-        if (isAdded()){
-            mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
+    private void setupAdapter() {
+        if (isAdded()) {
+            mPhotoAdapter = new PhotoAdapter( mItems );
+            mPhotoRecyclerView.setAdapter( mPhotoAdapter );
         }
     }
 
     //来时准备视图层的部分
-    private class PhotoHolder extends RecyclerView.ViewHolder{
+    private class PhotoHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
 //        private TextView mTitleTextView;
 
         private ImageView mItemImageView;
+        private GalleryItem mGalleryItem;
 
         public PhotoHolder(View itemView) {
-            super(itemView);
-            mItemImageView = (ImageView) itemView.findViewById(R.id.fragment_photo_gallery_image_view);
-//        mTitleTextView = (TextView) itemView;
-    }
+            super( itemView );
+            mItemImageView = (ImageView) itemView.findViewById( R.id.fragment_photo_gallery_image_view );
+//          mTitleTextView = (TextView) itemView;
+            itemView.setOnClickListener( this );
+        }
 
 //        public void bindGalleryItem(GalleryItem item){
 //            Picasso.with( getActivity() )
@@ -208,17 +269,27 @@ PhotoGalleryFragment extends Fragment {
 //        }
 
 
-        public void bindDrawable(Drawable drawable){
-            mItemImageView.setImageDrawable(drawable);
+        public void bindDrawable(Drawable drawable) {
+            mItemImageView.setImageDrawable( drawable );
+        }
+
+        public void bindGalleryItem(GalleryItem galleryItem){
+            mGalleryItem = galleryItem;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent( Intent.ACTION_VIEW,mGalleryItem.getPhotoPageUri() );
+            startActivity( intent );
         }
     }
 
-    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder>{
+    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
 
         private List<GalleryItem> mGalleryItems;
 
         //构建构造器用与外部数据提取数据
-        public PhotoAdapter(List<GalleryItem> galleryItems){
+        public PhotoAdapter(List<GalleryItem> galleryItems) {
             mGalleryItems = galleryItems;
         }
 
@@ -228,24 +299,25 @@ PhotoGalleryFragment extends Fragment {
 //            TextView textView = new TextView(getActivity());
 //            return new PhotoHolder(textView);
             //改为图片的bind
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            LayoutInflater inflater = LayoutInflater.from( getActivity() );
             ///实例化gallery_item布局
-            View view = inflater.inflate(R.layout.gallery_item,parent,false);
-            return new PhotoHolder(view);
+            View view = inflater.inflate( R.layout.gallery_item, parent, false );
+            return new PhotoHolder( view );
         }
 
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
 
-            GalleryItem galleryItem = mGalleryItems.get(position);
+            GalleryItem galleryItem = mGalleryItems.get( position );
 //            holder.bindGalleryItem(galleryItem);
             //改为绑定图片
             //先去的照片的信息
-            Drawable placeholder = getResources().getDrawable(R.drawable.bill_up_close);
+            Drawable placeholder = getResources().getDrawable( R.drawable.bill_up_close );
             //再绑定照片
-            holder.bindDrawable(placeholder);
+            holder.bindDrawable( placeholder );
+            holder.bindGalleryItem(galleryItem);
             //传入设置图片的PhotoHolder和GalleryItem的URL
-            mThumbnailDownloader.queueThumbnail(holder,galleryItem.getUrl());
+            mThumbnailDownloader.queueThumbnail( holder, galleryItem.getUrl() );
         }
 
         @Override
@@ -256,13 +328,14 @@ PhotoGalleryFragment extends Fragment {
 
 
     @SuppressLint("StaticFieldLeak")
-    private class FetchItemsTask extends AsyncTask<Void,Void,List<GalleryItem>>{
+    private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
 
         private String mQuery;
 
-        public FetchItemsTask(String qurey){
+        public FetchItemsTask(String qurey) {
             mQuery = qurey;
         }
+
         @Override
         protected List<GalleryItem> doInBackground(Void... voids) {
 //            try {
@@ -276,10 +349,10 @@ PhotoGalleryFragment extends Fragment {
             //将GalleryItem对象List传递给onPostExecute()方法使用
 //            String query = "robot";
 
-            if (mQuery == null){
+            if (mQuery == null) {
                 //如果搜索框内容为空,就会默认加载最新的公共图片
                 return new FlickrFetchr().fetchRecentPhotos();
-            }else {
+            } else {
                 ///如果搜索框为非空，执行搜索任务
                 return new FlickrFetchr().searchPhotos( mQuery );
             }
@@ -294,4 +367,37 @@ PhotoGalleryFragment extends Fragment {
             setupAdapter();
         }
     }
+
+    /*
+    分页加载
+     */
+//    private RecyclerView.OnScrollListener onButtomListener = new RecyclerView.OnScrollListener() {
+//        @Override
+//        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//            super.onScrollStateChanged( recyclerView, newState );
+//            GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+//            mLastPosition = layoutManager.findLastVisibleItemPosition();
+//            if (mPhotoAdapter == null) {
+//                return;
+//            }
+//            if (newState == RecyclerView.SCROLL_STATE_IDLE
+//                    && mLastPosition >= mPhotoAdapter.getItemCount() - 1) {
+//                if (mFetchItemsTask.getStatus() == AsyncTask.Status.FINISHED) {
+//                    mNextPage++;
+//                    if (mNextPage < MAX_PAGES) {
+//                        Toast.makeText( getActivity(), "waiting to load...", Toast.LENGTH_SHORT ).show();
+//                        updateItems( mNextPage );
+//                    } else {
+//                        Toast.makeText( getActivity(), "This is the end.", Toast.LENGTH_SHORT ).show();
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        @Override
+//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//            super.onScrolled( recyclerView, dx, dy );
+//        }
+//    };
 }

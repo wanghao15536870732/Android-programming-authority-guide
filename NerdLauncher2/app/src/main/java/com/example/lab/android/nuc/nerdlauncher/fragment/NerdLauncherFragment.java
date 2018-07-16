@@ -1,13 +1,10 @@
-package com.example.lab.android.nuc.nerdlauncher;
+package com.example.lab.android.nuc.nerdlauncher.fragment;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.lab.android.nuc.nerdlauncher.R;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,7 +36,7 @@ public class NerdLauncherFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_nerd_launcher,container,false);
+        View view = inflater.inflate( R.layout.fragment_nerd_launcher,container,false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_nerd_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setupAdapter();

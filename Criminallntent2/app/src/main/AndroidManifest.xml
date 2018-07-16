@@ -43,7 +43,7 @@
             <!-- </intent-filter> -->
         </activity>
         <activity
-            android:name=".settingActivity.SettingsActivity"
+            android:name=".Activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <provider
             android:name="android.support.v4.content.FileProvider"
