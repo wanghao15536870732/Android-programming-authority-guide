@@ -3,10 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.lab.android.nuc.photogallery">
 
+
+    <permission android:name="com.example.lab.android.nuc.photogallery.PRIVATE"
+      android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.example.lab.android.nuc.photogallery.PRIVATE"/>
 
     <application
         android:allowBackup="true"
@@ -14,8 +20,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="ExtraText">
+        android:theme="@style/AppTheme">
         <activity android:name=".Activity.PhotoGalleryActivity"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
@@ -24,16 +29,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <!--这一句真真真真真的很重要，一句好解决因设备旋转造成WebView重新加载的问题-->
+        <activity android:name=".Activity.PhotoPageActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            tools:ignore="InnerclassSeparator" />
+
+        <service
+            android:name=".service.PollService">
+        </service>
+
         <receiver android:name=".receiver.StartupReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".service.PollService"
+        <receiver android:name=".receiver.NotificationReceiver"
+            android:exported="false">
+            <intent-filter android:priority="-999">
+                <action android:name="com.example.lab.android.nuc.photogallery.SHOW_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".service.JobSchedulerService"
             android:exported="false">
         </service>
-    </application>
 
+    </application>
 </manifest>

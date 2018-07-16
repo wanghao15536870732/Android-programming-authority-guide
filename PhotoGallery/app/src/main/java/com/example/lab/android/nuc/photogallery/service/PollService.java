@@ -1,5 +1,6 @@
 package com.example.lab.android.nuc.photogallery.service;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
@@ -8,10 +9,13 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +26,7 @@ import com.example.lab.android.nuc.photogallery.Base.FlickrFetchr;
 import com.example.lab.android.nuc.photogallery.Base.GalleryItem;
 import com.example.lab.android.nuc.photogallery.Base.QueryPreferences;
 import com.example.lab.android.nuc.photogallery.R;
+import com.example.lab.android.nuc.photogallery.receiver.StartupReceiver;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -29,6 +34,8 @@ import java.util.ResourceBundle;
 public class PollService extends IntentService {
 
     private static final String TAG = "PollService";
+    public static final String REQUEST_CODE = "REQUEST_CODE";
+    public static final String NOTIFICATION = "NOTIFICATION";
 
 //    private static final int POLL_INTERVAL = 1000 * 60;// 60 seconds
 
@@ -36,6 +43,13 @@ public class PollService extends IntentService {
     可以邦正在kitKat之前的设备省获得胡怎么精准的重复定时器行为
      */
     private static final long POLL_INTERVAL = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+
+    public static final String ACTION_SHOW_NOTIFICATION =
+            "com.example.lab.android.nuc.photogallery.SHOW_NOTIFICATION";
+
+    public static final String PERM_PRIVATE =
+            "com.example.lab.android.nuc.photogallery.PRIVATE";
+
 
     public static Intent newIntent(Context context){
         return new Intent( context,PollService.class);
@@ -58,6 +72,8 @@ public class PollService extends IntentService {
             alarmManager.cancel( pi );
             pi.cancel();
         }
+
+        QueryPreferences.setAlarm( context,ison );
     }
 
     /**
@@ -79,6 +95,7 @@ public class PollService extends IntentService {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 
@@ -123,13 +140,29 @@ public class PollService extends IntentService {
                     .setAutoCancel( true )
                     .build();
 
-            NotificationManagerCompat notificationManagerCompat =
-                    NotificationManagerCompat.from( this );
-            notificationManagerCompat.notify(0,notification);
+            //摈弃之前无序broadcast的方法
+//            NotificationManagerCompat notificationManagerCompat =
+//                    NotificationManagerCompat.from( this );
+//            notificationManagerCompat.notify(0,notification);
+//
+//            sendBroadcast( new Intent( ACTION_SHOW_NOTIFICATION ) );
+
+            showBackgroundNotification( 0,notification );
         }
         QueryPreferences.setLastResulted( this,resultId );
     }
 
+
+    /**
+     * 新建新的方法，用于发送有序的broadcast
+     */
+    private void showBackgroundNotification(int requesCode,Notification notification){
+        Intent i = new Intent( ACTION_SHOW_NOTIFICATION );
+        i.putExtra( REQUEST_CODE,requesCode );
+        i.putExtra( NOTIFICATION,notification );
+        sendOrderedBroadcast(i,PERM_PRIVATE,null,null ,
+                Activity.RESULT_OK,null,null);
+    }
 
 
     public boolean isNetWOrkAvailableAndConnected(){

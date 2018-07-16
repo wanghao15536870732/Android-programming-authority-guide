@@ -1,7 +1,9 @@
 package com.example.lab.android.nuc.photogallery.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.job.JobScheduler;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.lab.android.nuc.photogallery.Activity.PhotoPageActivity;
 import com.example.lab.android.nuc.photogallery.Base.FlickrFetchr;
 import com.example.lab.android.nuc.photogallery.Base.GalleryItem;
 import com.example.lab.android.nuc.photogallery.Base.QueryPreferences;
@@ -34,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class
-PhotoGalleryFragment extends Fragment {
+PhotoGalleryFragment extends VisibleFragment {
 
     private PhotoAdapter mPhotoAdapter;
 
@@ -48,6 +51,7 @@ PhotoGalleryFragment extends Fragment {
 
     private FetchItemsTask mFetchItemsTask;
 
+    private JobScheduler jobScheduler;
     private final int MAX_PAGES = 3;
 
     public static PhotoGalleryFragment newInstance() {
@@ -186,7 +190,18 @@ PhotoGalleryFragment extends Fragment {
         } );
 
 
+
         MenuItem togglemenuItem = menu.findItem( R.id.menu_item_toggle_polling );
+        togglemenuItem.setOnMenuItemClickListener( new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                boolean shouldStartAlerm = !PollService.isServiceAlarmOn( getActivity() );
+                PollService.setServiceAlerm( getActivity(),shouldStartAlerm );
+                //menu刷新UI的更改更新
+                getActivity().invalidateOptionsMenu();
+                return true;
+            }
+        } );
         if (PollService.isServiceAlarmOn( getActivity())){
             togglemenuItem.setTitle( R.string.stop_polling );
         }else {
@@ -279,7 +294,8 @@ PhotoGalleryFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent( Intent.ACTION_VIEW,mGalleryItem.getPhotoPageUri() );
+//            Intent intent = new Intent( Intent.ACTION_VIEW,mGalleryItem.getPhotoPageUri() );
+            Intent intent = PhotoPageActivity.newIntent( getActivity(),mGalleryItem.getPhotoPageUri() );
             startActivity( intent );
         }
     }
@@ -309,7 +325,7 @@ PhotoGalleryFragment extends Fragment {
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
 
             GalleryItem galleryItem = mGalleryItems.get( position );
-//            holder.bindGalleryItem(galleryItem);
+            holder.bindGalleryItem(galleryItem);
             //改为绑定图片
             //先去的照片的信息
             Drawable placeholder = getResources().getDrawable( R.drawable.bill_up_close );
@@ -400,4 +416,6 @@ PhotoGalleryFragment extends Fragment {
 //            super.onScrolled( recyclerView, dx, dy );
 //        }
 //    };
+
+
 }
