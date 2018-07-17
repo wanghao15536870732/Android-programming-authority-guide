@@ -66,7 +66,6 @@ public class BoxDrawingView extends View{
         switch (event.getActionMasked()){
             case MotionEvent.ACTION_DOWN:
                 action = "ACTION_DOWN";
-
                 mCurrentBox = new Box( current);
                 mBoxen.add( mCurrentBox );
                 break;
@@ -74,12 +73,17 @@ public class BoxDrawingView extends View{
                 action = "ACTION_MOVE";
                 if (mCurrentBox != null) {
                     if (event.getPointerCount() == 1 && mCurrentBox.getCurrentAngle() == 0) {
+                        //如果只有一只手指按下，而且还未曾旋转过的话，就进行大小的缩放
                         mCurrentBox.setCurrent(current);
                     }
+                    // 如果按下了两根手指
                     if (event.getPointerCount() == 2) {
+                        //获取角度
                         float angle = (float) (Math.atan((event.getY(1) - event.getY(0)) /
                                 (event.getX(1) - event.getX(0))) * 180 / Math.PI);
                         Log.i(TAG, "onTouchEvent: angle:" + (angle - mCurrentBox.getOriginAngle()));
+                        // 已旋转的角度 = 之前旋转的角度 + 新旋转的角度
+                        // 新旋转的角度 = 本次 move 到的角度 - 手指按下的角度
                         mCurrentBox.setCurrentAngle(mCurrentBox.getCurrentAngle() + angle
                                 - mCurrentBox.getOriginAngle());
                         mCurrentBox.setOriginAngle(angle);
@@ -89,7 +93,10 @@ public class BoxDrawingView extends View{
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 action = "POINTER_DOWN";
+                //两根手指同时按下
                 if (event.getPointerCount() == 2) {
+                    // 首先获取按下时的角度（有一个弧度转角度的过程）
+                    // 每次按下的时候将角度存入现在矩形的原始角度
                     float angle = (float) (Math.atan((event.getY(1) - event.getY(0)) /
                             (event.getX(1) - event.getX(0))) * 180 / Math.PI);
                     mCurrentBox.setOriginAngle(angle);
@@ -119,7 +126,9 @@ public class BoxDrawingView extends View{
             float top = Math.min( box.getOrigin().y,box.getCurrent().y );
             float bottom = Math.max( box.getOrigin().y,box.getCurrent().y);
             canvas.save();
+            //旋转画布
             canvas.rotate(box.getCurrentAngle(), box.getCenter().x, box.getCenter().y);
+            //确定矩形四个顶点的位置配上画笔即可
             canvas.drawRect( left,top,right,bottom,mBoxPaint);
             canvas.restore();
         }
@@ -136,6 +145,7 @@ public class BoxDrawingView extends View{
         bundle.putParcelable(KEY_SUPER_DATA, superData);
         // 存储所有的矩形
         bundle.putSerializable(KEY_BOXEN, (ArrayList) mBoxen);
+        invalidate();
         return bundle;
     }
 
@@ -143,7 +153,7 @@ public class BoxDrawingView extends View{
     protected void onRestoreInstanceState(Parcelable state) {
         Bundle bundle = (Bundle) state;
         Parcelable superData = bundle.getParcelable( KEY_SUPER_DATA );
-        mBoxen = (List<Box>) bundle.getSerializable( KEY_BOXEN );
+        mBoxen = (ArrayList<Box>) bundle.getSerializable( KEY_BOXEN );
         super.onRestoreInstanceState( superData );
         invalidate();
     }

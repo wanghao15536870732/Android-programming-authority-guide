@@ -333,6 +333,20 @@ PhotoGalleryFragment extends VisibleFragment {
             holder.bindDrawable( placeholder );
             holder.bindGalleryItem(galleryItem);
             //传入设置图片的PhotoHolder和GalleryItem的URL
+
+            /**
+             * 为前十个个和后十个预加载
+             */
+            for (int i = Math.max( 0,position - 10);
+                 i < Math.min( mGalleryItems.size() - 1,position + 10) ;
+                 i ++) {
+                Log.e( TAG,"Preload position" + i );
+                mThumbnailDownloader.queuePreloadThumbnail( mGalleryItems.get( i ).getUrl() );
+            }
+
+            /*
+            出现的视图加载
+             */
             mThumbnailDownloader.queueThumbnail( holder, galleryItem.getUrl() );
         }
 

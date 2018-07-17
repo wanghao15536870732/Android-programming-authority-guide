@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.util.LruCache;
 
 import com.example.lab.android.nuc.photogallery.Base.FlickrFetchr;
 
@@ -22,15 +23,24 @@ public class ThumbnailDownloader<T> extends HandlerThread{
 
     private static final String TAG = "ThumbnailDownloader";
     private static final int MESSAGE_DOWNLOAD = 0;
+    private static final int MESSAGE_PRELOAD = 1;
 
     private boolean mHasQuit = false;
     private Handler mRequestHandler;
     private ConcurrentMap<T,String> mRequestMap = new ConcurrentHashMap<>( );
     //这里使用一个标记下载请求的T类型对象
 
+
+
     //创建一个变量用于储存Handler变量的值
     private Handler mResponseHandler;
     private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
+
+    /**
+     * 挑战练习 预加载
+     * @param <T>
+     */
+    private LruCache<String,Bitmap> mCache;
 
 
     //新增一个用来(在请求者和结果之间) 通信的监听器接口
@@ -65,9 +75,15 @@ public class ThumbnailDownloader<T> extends HandlerThread{
 
                     //再将其target传入handleRequest()返回给发当中
                     handleRequest(target);
+            }else if (msg.what == MESSAGE_PRELOAD){
+                    String urlToPreload = (String) msg.obj;
+                    handlePreload(urlToPreload);
+//                    Log.i(TAG, "Preload URL: " + urlToPreload);
                 }
             }
         };
+        int maxCacheSize = 4 * 1024 * 1024; //4MB
+        mCache = new LruCache<>(maxCacheSize);
     }
 
 
@@ -90,6 +106,18 @@ public class ThumbnailDownloader<T> extends HandlerThread{
         }
     }
 
+    public void queuePreloadThumbnail(String url) {
+//        Log.i(TAG, "queuePreloadThumbnail: Got a URL: " + url);
+        mRequestHandler.obtainMessage(MESSAGE_PRELOAD, url).sendToTarget();
+    }
+
+    //添加消息清理机制
+    public void clearQueue() {
+        mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);
+        mRequestHandler.removeMessages(MESSAGE_PRELOAD);
+    }
+
+
     ////专门提供下载服务的类
     private void handleRequest(final T target){
         try{
@@ -99,11 +127,25 @@ public class ThumbnailDownloader<T> extends HandlerThread{
             if (url == null){
                 return;
             }
-            //传给FlickrFetchr新实例，并把返回的字节转化成位图
-            byte [] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-            final Bitmap bitmap = BitmapFactory.
-                    decodeByteArray(bitmapBytes,0,bitmapBytes.length);
-            Log.i(TAG,"Bitmap created");
+//            //传给FlickrFetchr新实例，并把返回的字节转化成位图
+//            byte [] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+//            final Bitmap bitmap = BitmapFactory.
+//                    decodeByteArray(bitmapBytes,0,bitmapBytes.length);
+//            Log.i(TAG,"Bitmap created");
+            final Bitmap bitmap;
+            //如果没有之前的缓存
+            if (mCache.get(url) == null) {
+                byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                //重新加载
+                Log.i(TAG, "Bitmap created");
+                //该方法保存了第一次加载的uri
+                mCache.put(url, bitmap);
+            } else {
+                //如果有就直接取出加载,
+                bitmap = mCache.get(url);
+                Log.i(TAG, "Bitmap from cache");
+            }
 
             //Handler.post(Runnable)是一个发布Message的方法
             mResponseHandler.post(new Runnable() {
@@ -122,10 +164,22 @@ public class ThumbnailDownloader<T> extends HandlerThread{
         }
     }
 
-    //添加消息清理机制
-    public void clearQueue(){
-        mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);
-    }
 
+
+    private void handlePreload(String url) {
+        try {
+            if (url == null) {
+                return;
+            }
+            if (mCache.get(url) == null) {
+                byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                Bitmap bitmap = BitmapFactory
+                        .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                mCache.put(url, bitmap);
+            }
+        } catch (IOException ioe) {
+            Log.e(TAG, "Error preloading image", ioe);
+        }
+    }
 
 }
