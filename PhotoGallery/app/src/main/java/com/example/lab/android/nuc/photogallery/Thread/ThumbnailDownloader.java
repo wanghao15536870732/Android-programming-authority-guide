@@ -18,7 +18,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-
+/**
+ * 添加懒加载
+ * @param <T>
+ */
 public class ThumbnailDownloader<T> extends HandlerThread{
 
     private static final String TAG = "ThumbnailDownloader";

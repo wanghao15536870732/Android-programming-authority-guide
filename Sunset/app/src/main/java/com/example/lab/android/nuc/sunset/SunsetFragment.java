@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 
+/**
+ * 完成挑战联系一
+ */
 public class SunsetFragment extends Fragment {
 
     private View mSceneView;

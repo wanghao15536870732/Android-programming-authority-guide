@@ -11,4 +11,6 @@ public class LocatrActivity extends SingleFragmentActivity {
         return null;
     }
 
+    private int i = 0;
+
 }

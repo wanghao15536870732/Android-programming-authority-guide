@@ -19,6 +19,9 @@ import com.example.lab.android.nuc.draganddraw.base.Box;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 优化view
+ */
 public class BoxDrawingView extends View{
 
 //    private static final String TAG = "BoxDrawingView";
