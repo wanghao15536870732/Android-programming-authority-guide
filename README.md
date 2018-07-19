@@ -1,7 +1,9 @@
-# Android-programming-authority-guide
-基于Android编程权威指南的学习
+
 
 <div align="center">
+  
+  # Android-programming-authority-guide
+  基于Android编程权威指南的学习
   
   ### Androoid 编程权威指南
   
