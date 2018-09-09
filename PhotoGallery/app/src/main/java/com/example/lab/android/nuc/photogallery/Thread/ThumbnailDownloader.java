@@ -33,8 +33,6 @@ public class ThumbnailDownloader<T> extends HandlerThread{
     private ConcurrentMap<T,String> mRequestMap = new ConcurrentHashMap<>( );
     //这里使用一个标记下载请求的T类型对象
 
-
-
     //创建一个变量用于储存Handler变量的值
     private Handler mResponseHandler;
     private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
@@ -78,7 +76,7 @@ public class ThumbnailDownloader<T> extends HandlerThread{
 
                     //再将其target传入handleRequest()返回给发当中
                     handleRequest(target);
-            }else if (msg.what == MESSAGE_PRELOAD){
+                }else if (msg.what == MESSAGE_PRELOAD){
                     String urlToPreload = (String) msg.obj;
                     handlePreload(urlToPreload);
 //                    Log.i(TAG, "Preload URL: " + urlToPreload);

@@ -36,8 +36,7 @@ import com.example.lab.android.nuc.photogallery.service.PollService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class
-PhotoGalleryFragment extends VisibleFragment {
+public class PhotoGalleryFragment extends VisibleFragment {
 
     private PhotoAdapter mPhotoAdapter;
 
@@ -61,7 +60,6 @@ PhotoGalleryFragment extends VisibleFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
-
         //在Activity重新创建时可以不完全销毁Fragment，以便Fragment可以恢复
         setRetainInstance( true );
 
@@ -147,11 +145,11 @@ PhotoGalleryFragment extends VisibleFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         super.onCreateOptionsMenu( menu, menuInflater );
         menuInflater.inflate( R.menu.fragment_photo_gallery, menu );
+
         /**
          * 实现SearchView。OnQueryTextListener监听方法
          */
-
-        ///首先从菜单中取出MenuItem并把它保存在searchItem变量当中
+        //首先从菜单中取出MenuItem并把它保存在searchItem变量当中
         final MenuItem searchItem = menu.findItem( R.id.menu_item_search );
 
         //使用getActionView()取出searchView

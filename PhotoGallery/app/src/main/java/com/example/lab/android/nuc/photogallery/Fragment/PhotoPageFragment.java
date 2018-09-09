@@ -56,12 +56,12 @@ public class PhotoPageFragment extends VisibleFragment{
         mWebView.setWebChromeClient( new WebChromeClient(){
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                                    if (newProgress == 100){
-                        mProgressBar.setVisibility( View.GONE);
-                    }else {
-                        mProgressBar.setVisibility( View.VISIBLE );
-                        mProgressBar.setProgress( newProgress );
-                    }
+                if (newProgress == 100){
+                    mProgressBar.setVisibility( View.GONE);
+                }else {
+                    mProgressBar.setVisibility( View.VISIBLE );
+                    mProgressBar.setProgress( newProgress );
+                }
             }
 
             public void onReceivedTitle(WebView view, String title) {

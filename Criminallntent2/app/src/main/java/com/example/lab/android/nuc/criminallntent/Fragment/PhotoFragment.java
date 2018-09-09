@@ -1,8 +1,9 @@
 package com.example.lab.android.nuc.criminallntent.Fragment;
 
+
+
 import android.app.AlertDialog;
 import android.app.Dialog;
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -15,7 +16,6 @@ import com.example.lab.android.nuc.criminallntent.utils.PictureUtils;
 
 import java.io.File;
 
-import static android.icu.text.DateTimePatternGenerator.PatternInfo.OK;
 
 /**
  * 挑战联系 优化照片显示

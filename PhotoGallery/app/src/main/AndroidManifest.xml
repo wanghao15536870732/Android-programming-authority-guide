@@ -36,15 +36,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             tools:ignore="InnerclassSeparator" />
 
-        <service
-            android:name=".service.PollService">
-        </service>
+        <service android:name=".service.PollService"/>
 
-        <receiver android:name=".receiver.StartupReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
+
 
         <receiver android:name=".receiver.NotificationReceiver"
             android:exported="false">

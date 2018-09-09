@@ -17,7 +17,7 @@ public class QueryPreferences {
         return PreferenceManager.getDefaultSharedPreferences( context )
                 .getString( PREF_SEARCH_QUERY,null );
     }
-    //过SharePreference写入数据
+    //通过SharePreference写入数据
     public static void setStoreQuery(Context context,String query){
         PreferenceManager.getDefaultSharedPreferences( context )
                 .edit()

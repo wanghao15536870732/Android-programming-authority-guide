@@ -160,7 +160,7 @@ public class SunsetFragment extends Fragment {
         nightSkyAnimator = ObjectAnimator.
                 ofInt(mSkyView, "backgroundColor", mSunsetSkyColor, mBlueSkyColor).
                 setDuration(3000);
-        nightSkyAnimator.setEvaluator(new ArgbEvaluator()); }
-
+        nightSkyAnimator.setEvaluator(new ArgbEvaluator());
+    }
 
 }
