@@ -12,13 +12,13 @@
 
 ## 书里面的几个项目演示
 
-+ ### [BeatBox](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/BeatBox.md)
-+ ### [Criminallntent](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Criminallntent.md)
-+ ### [DragAndDraw](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/DragAndDraw.md)
-+ ### [Locatr](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Locatr.md)
-+ ### [NerdLauncher](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/NerdLauncher.md)
-+ ### [PhotoGallery](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/PhotoGallery.md)
-+ ### [Sunset](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Sunset.md)
++ [BeatBox](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/BeatBox.md)
++ [Criminallntent](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Criminallntent.md)
++ [DragAndDraw](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/DragAndDraw.md)
++ [Locatr](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Locatr.md)
++ [NerdLauncher](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/NerdLauncher.md)
++ [PhotoGallery](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/PhotoGallery.md)
++ [Sunset](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Sunset.md)
 
 ## 读书笔记
 
