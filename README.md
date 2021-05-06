@@ -8,7 +8,7 @@
   
 + [Android编程权威指南中文版](https://pan.baidu.com/s/1QvoY8lwhCoGce9ZLz3-n4Q) 密码：l78o
 
-### 书里面的几个项目演示
+### 章节项目演示
 
 + [BeatBox](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/BeatBox.md)
 + [Criminallntent](https://github.com/wanghao15536870732/Android-programming-authority-guide/blob/master/Guide/Criminallntent.md)
